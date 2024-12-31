@@ -8,9 +8,10 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - GamePlay
   - Water
   - UI
+  - Overlay
   - 
   - 
   - 
@@ -35,9 +36,17 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - ScreenOverlay
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: GamePlay
+    uniqueID: 1847833983
+    locked: 0
+  - name: Overlay
+    uniqueID: 1306477287
+    locked: 0
+  - name: UI
+    uniqueID: 2572513813
     locked: 0
