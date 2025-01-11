@@ -48,23 +48,23 @@ public class LoadingScreenView : UIController
     {
         _loadingText.text = $"Loading...";
         _progressBar.fillAmount = 0f;
-        yield return _progressBar.DOFillAmount(0.8f, 2f).WaitForCompletion();
+        // yield return _progressBar.DOFillAmount(0.8f, 2f).WaitForCompletion();
 
 #if !UNITY_EDITOR
-        var time = 0f;
-        while (time < timeOut)
-        {
-            if (AdsManager.Instance.IsInitialized)
-            {
-                yield return _progressBar.DOFillAmount(1f, 0.5f).WaitForCompletion();
-                OnComplete?.Invoke();
-                yield break;
-            }
-            time += Time.deltaTime;
-            yield return null;
-        }
+        // var time = 0f;
+        // while (time < timeOut)
+        // {
+        //     if (AdsManager.Instance.IsInitialized)
+        //     {
+        //         yield return _progressBar.DOFillAmount(1f, 0.5f).WaitForCompletion();
+        //         OnComplete?.Invoke();
+        //         yield break;
+        //     }
+        //     time += Time.deltaTime;
+        //     yield return null;
+        // }
 #endif
-        yield return _progressBar.DOFillAmount(1f, 0.5f).WaitForCompletion();
+        yield return _progressBar.DOFillAmount(1f, 1f).WaitForCompletion();
         OnComplete?.Invoke();
     }
 }
