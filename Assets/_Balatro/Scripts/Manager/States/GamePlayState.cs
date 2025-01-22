@@ -15,6 +15,9 @@ public class GamePlayState : State
         base.OnEnter();
         _view = GameFlow._instance.ShowUI<GamePlayView>("GamePlayView");
         _controller = _view.GetComponent<GamePlayController>();
+
+        _controller.Init();
+        
         _controller.OnWin = OnEndGame;
         _controller.OnLose = OnEndGame;
     }

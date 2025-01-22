@@ -37,8 +37,8 @@ namespace Balatro
         private List<Card> _cards;
         private bool _isCrossing;
 
-
-        private void Start()
+        public List<Card> Cards => _cards;
+        public void Init()
         {
             GetCardData();
             GeneratePlayerHandCards();
@@ -170,6 +170,11 @@ namespace Balatro
             float rotationZ = value;
 
             slot.SetCardTransform(new Vector2(0, y),new Vector3(0f, 0f, rotationZ));
+        }
+
+        public void Sort(List<Card> cardsSorted)
+        {
+            _cards = cardsSorted;
         }
     }
 }
