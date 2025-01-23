@@ -41,10 +41,10 @@ namespace Balatro
         public void Init()
         {
             GetCardData();
-            GeneratePlayerHandCards();
+            GenerateCards();
         }
 
-        private void GeneratePlayerHandCards()
+        private void GenerateCards()
         {
             _cards = new List<Card>();
             var randomCards = new List<CardData>();
@@ -127,6 +127,20 @@ namespace Balatro
             }
             card.SetupOriginTransform(newPos, selectedCardSlot.CardLocalRotation);
         }
+        
+        private void SwapCard(Card cardA, Card cardB)
+        {
+            _isCrossing = true;
+            var cardASlot = cardA.transform.parent.GetComponent<CardSlot>();
+            var cardBSlot = cardB.transform.parent.GetComponent<CardSlot>();
+            cardA.SetCardSlot(cardBSlot);
+            cardB.SetCardSlot(cardASlot);
+            _isCrossing = false;
+            
+            cardA.SetupOriginTransform(cardBSlot.CardPosition, cardBSlot.CardLocalRotation);
+            cardB.SetupOriginTransform(cardASlot.CardPosition, cardASlot.CardLocalRotation);
+
+        }
 
         private void EndDragCard()
         {
@@ -174,6 +188,7 @@ namespace Balatro
 
         public void Sort(List<Card> cardsSorted)
         {
+            
             _cards = cardsSorted;
         }
     }
