@@ -11,17 +11,17 @@ namespace Balatro
 {
     public interface ICardLogic
     {
-        
+
     }
 
     public enum CardType
     {
         Spades = 1,
         Clubs,
-        Diamonds, 
-        Hearts 
+        Diamonds,
+        Hearts
     }
-    
+
     [Serializable]
     public class CardData
     {
@@ -45,13 +45,13 @@ namespace Balatro
     {
         [SerializeField] protected CardView _view;
         [SerializeField] protected CardData _data;
-        
+
         protected RectTransform _rectTransform;
         protected Vector2 _originalPosition;
         protected CardSlot _cardSlot;
         protected TransformEffects _transfromEffect;
 
-        
+
         public bool IsChosen;
         protected bool _isDragging;
 
@@ -76,7 +76,7 @@ namespace Balatro
         {
             _view.SetupView(sprite);
         }
-        
+
         public virtual void OnPointerClick(PointerEventData eventData)
         {
 
@@ -115,7 +115,7 @@ namespace Balatro
             {
                 _view.EnableShadow(true);
                 _transfromEffect.RotateCardWhenMoving(eventData.position, true);
-                var worldPosition = UIManager.Instance.CameraUI.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y,UIManager.Instance.CameraUI.nearClipPlane));
+                var worldPosition = UIManager.Instance.CameraUI.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, UIManager.Instance.CameraUI.nearClipPlane));
                 worldPosition.z = 0;
                 _rectTransform.position = worldPosition;
             }
@@ -126,7 +126,6 @@ namespace Balatro
                 // _transfromEffect.ResetRotation();
             }
         }
-
 
         private void ResetTransform()
         {
@@ -145,7 +144,7 @@ namespace Balatro
             var sequence = DOTween.Sequence();
             sequence.Append(_rectTransform.DOScale(1f, 0.025f));
         }
-        
+
         private bool IsPointerInsideScreen(Vector2 pointerPosition)
         {
             return pointerPosition.x >= 0 && pointerPosition.x <= Screen.width &&
@@ -204,5 +203,16 @@ namespace Balatro
         {
             _transfromEffect.RotateCardWhenMoving(pos, true);
         }
+
+        public CardData GetCardData()
+        {
+            return _data;
+        }
+
+        public CardSlot GetCardSlot()
+        {
+            return _cardSlot;
+        }
+
     }
 }
