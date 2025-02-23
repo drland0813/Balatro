@@ -43,12 +43,10 @@ namespace Balatro
         public List<Card> Cards => _cards;
         public List<Card> ChosenCards => _chosenCards;
 
-        public void Init(bool generateCard = true)
+        public void Init()
         {
             GetCardData();
             GenerateSlotCard(_numberOfCard);
-            if (!generateCard) return;
-
             GenerateCards();
         }
 
@@ -176,7 +174,7 @@ namespace Balatro
         protected void GenerateSlotCard(int numberOfCard)
         {
             _slots = new List<CardSlot>();
-            for (int i = 0; i < _numberOfCard; i++)
+            for (int i = 0; i < numberOfCard; i++)
             {
                 var cardSlot = Instantiate(_cardSlotPrefab, _cardParent);
                 cardSlot.name = $"Slot-{i}";
@@ -246,6 +244,17 @@ namespace Balatro
         {
             
             _cards = cardsSorted;
+        }
+        
+        protected void DoMoveY(float yValue, Action callback = null, bool isDown = true)
+        {
+            var pos = transform.position;
+            pos.y += isDown ? -yValue : yValue;
+            transform.DOMoveY(pos.y, 0.5f).SetEase(Ease.InBack)
+                .OnComplete((() =>
+                {
+                    callback?.Invoke(); 
+                }));
         }
     }
 }

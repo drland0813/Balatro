@@ -59,6 +59,8 @@ namespace Balatro
         public Action OnDragAction;
         public Action OnEndDragAction;
         public Action<Card> OnClick;
+
+        public bool CanInteract = true;
         
 
         private void Awake()
@@ -86,6 +88,8 @@ namespace Balatro
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if (!CanInteract) return;
+            
             SetCardOnTop(true);
 
             OnBeginDragAction?.Invoke(this);
@@ -112,6 +116,8 @@ namespace Balatro
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (!CanInteract) return;
+
             OnDragAction?.Invoke();
             if (IsPointerInsideScreen(eventData.position))
             {
@@ -155,6 +161,8 @@ namespace Balatro
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (!CanInteract) return;
+
             OnEndDragAction?.Invoke();
             ResetTransform();
             _view.EnableShadow(false);
@@ -163,6 +171,8 @@ namespace Balatro
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            if (!CanInteract) return;
+
             var sequence = DOTween.Sequence();
             sequence.Append(_rectTransform.DOScale(1.2f, 0.025f));
         }
@@ -177,20 +187,22 @@ namespace Balatro
 
         public void OnPointerUp(PointerEventData eventData)
         {
+            if (!CanInteract) return;
+
             if (_isDragging) return;
 
-            UpdateChosenState();
+            IsChosen = !IsChosen;
+            UpdateChosenState(IsChosen);
 
         }
 
-        public void UpdateChosenState()
+        public void UpdateChosenState(bool isChosen)
         {
-            IsChosen = !IsChosen;
             OnClick?.Invoke(this);
             var sequence = DOTween.Sequence();
 
             var y = _rectTransform.anchoredPosition.y;
-            y += IsChosen ? 40 : -40;
+            y += isChosen ? 40 : -40;
 
             sequence.Append(_rectTransform.DOScale(1.2f, 0.025f))
                 .Append(_rectTransform.DOAnchorPosY(y, 0.1f))

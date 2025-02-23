@@ -20,6 +20,8 @@ namespace GamePlay
         [SerializeField] private HorizontalCardHolder _specialCard;
         [SerializeField] private TableCardHolder _tableCardHolder;
 
+        [SerializeField] private ScoreManager _scoreManager;
+
         public Action OnWin;
         public Action OnLose;
 
@@ -30,12 +32,11 @@ namespace GamePlay
 
         public void Init()
         {
-            _tableCardHolder.OnGetCardComplete = CalculateScore;
+            _tableCardHolder.OnPlayEffectFinish = _scoreManager.UpdateScore;
             
             _playerHandCard.Init();
             _jokerCard.Init();
             _specialCard.Init();
-            _tableCardHolder.Init(false);
         }
 
         private void CalculateScore()
@@ -148,8 +149,16 @@ namespace GamePlay
         {
             var playerHandCards = _playerHandCard.GetCardsAreChosen();
             if (playerHandCards.Count > 5) return;
-
-            _tableCardHolder.GetCards(playerHandCards);
+            foreach (var card in playerHandCards)
+            {
+                card.CanInteract = false;
+                card.IsChosen = false;
+            }
+            _tableCardHolder.GetCardsData(playerHandCards);
+            _playerHandCard.MoveY(callback: () =>
+            {
+                _tableCardHolder.GenerateCards();
+            });
         }
 
         public void Discard()

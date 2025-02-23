@@ -7,31 +7,41 @@ namespace Balatro
 {
     public class TableCardHolder : HorizontalCardHolder
     {
-        public Action OnGetCardComplete;
+        public Action OnPlayEffectFinish;
+
         private float _delayMoveCardTime = 0.5f;
-        public void GetCards(List<Card> playerHandCards)
+        
+        public void GetCardsData(List<Card> playerHandCards)
         {
-            StartCoroutine(GetCardsCoroutine(playerHandCards));
-            Debug.Log($"card chosen: {playerHandCards.Count}");
+            _cards = new List<Card>(playerHandCards);
+        }
+        public void GenerateCards()
+        {
+            GenerateSlotCard(_cards.Count);
+            StartCoroutine(GetCardsCoroutine());
         }
 
-        IEnumerator GetCardsCoroutine(List<Card> playerHandCards)
+        IEnumerator GetCardsCoroutine()
         {
-            _cards = new List<Card>();
-            for (var i = 0; i < playerHandCards.Count; i++)
+            for (var i = 0; i < _cards.Count; i++)
             {
                 var slot = _slots[i];
                 var newPos = slot.CardPosition;
 
-                var card = playerHandCards[i];
-                _cards.Add(card);
+                var card = _cards[i];
                 
                 card.SetCardSlot(slot);
                 card.SetupOriginTransform(newPos, slot.CardLocalRotation);
-                // yield return new WaitForSeconds(_delayMoveCardTime);
                 yield return null;
             }
-            OnGetCardComplete?.Invoke();
+            yield return new WaitForSeconds(0.5f);
+            for (var i = 0; i < _cards.Count; i++)
+            {
+                var card = _cards[i];
+                card.UpdateChosenState(true);
+                yield return new WaitForSeconds(0.2f);
+            }
+            OnPlayEffectFinish?.Invoke();
         }
     }
 }
