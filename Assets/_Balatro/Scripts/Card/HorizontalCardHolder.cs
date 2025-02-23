@@ -16,36 +16,45 @@ namespace Balatro
     {
         public List<CardData> Cards;
     }
+
     public class HorizontalCardHolder : MonoBehaviour
     {
-        [SerializeField] private CardSlot _cardSlotPrefab; 
-        [SerializeField] private Card _cardPrefab; 
-        [SerializeField] private Transform _cardParent;
-        [SerializeField] private CardResourceDataAsset _cardAsset;
-        [SerializeField] private int _numberOfCard;
+        [SerializeField] protected CardSlot _cardSlotPrefab; 
+        [SerializeField] protected Card _cardPrefab; 
+        [SerializeField] protected Transform _cardParent;
+        [SerializeField] protected CardResourceDataAsset _cardAsset;
+        [SerializeField] protected int _numberOfCard;
 
         [Header("Alignment Cards")] 
-        [SerializeField] private bool _isAlignment;
-        [SerializeField] private float radius = 30;   // Bán kính đường cong
-        [SerializeField] private float maxRotationAngle = 10; // Góc xoay tối đa
-        [SerializeField] private float offsetX = 0f;    // Điểm bắt đầu trục X
-        [SerializeField] private float offsetY = -100f; 
+        [SerializeField] protected bool _isAlignment;
+        [SerializeField] protected float radius = 30;   // Bán kính đường cong
+        [SerializeField] protected float maxRotationAngle = 10; // Góc xoay tối đa
+        [SerializeField] protected float offsetX = 0f;    // Điểm bắt đầu trục X
+        [SerializeField] protected float offsetY = -100f; 
         
         
-        private Card _selectedCard;
-        private List<CardData> _cardData;
-        private List<Card> _cards;
-        private bool _isCrossing;
+        protected Card _selectedCard;
+        protected List<CardData> _cardData;
+        protected List<Card> _cards;
+        protected bool _isCrossing;
+        protected List<Card> _chosenCards;
+        protected List<CardSlot> _slots;
 
         public List<Card> Cards => _cards;
-        public void Init()
+        public List<Card> ChosenCards => _chosenCards;
+
+        public void Init(bool generateCard = true)
         {
             GetCardData();
+            GenerateSlotCard(_numberOfCard);
+            if (!generateCard) return;
+
             GenerateCards();
         }
 
         private void GenerateCards()
         {
+            _chosenCards = new List<Card>();
             _cards = new List<Card>();
             var randomCards = new List<CardData>();
     
@@ -60,19 +69,23 @@ namespace Balatro
                 tempCards.RemoveAt(randomIndex);
             }
 
-            for (var i = 0; i < randomCards.Count; i++)
+            for (var i = 0; i < _slots.Count; i++)
             {
+                var cardSlot = _slots[i];
                 var cardData = randomCards[i];
-                var card = CreateCard(cardData, i);
+                var card = CreateCard(cardData, cardSlot);
                 card.OnBeginDragAction = BeginDragCard;
                 card.OnDragAction = DraggingCard;
                 card.OnEndDragAction = EndDragCard;
+                card.OnClick = ClickOnCard;
 
                 _cards.Add(card);
             }
         }
 
-        private void BeginDragCard(Card card)
+        public virtual void ClickOnCard(Card targetCard){}
+
+        protected void BeginDragCard(Card card)
         {
             _selectedCard = card;
         }
@@ -111,7 +124,7 @@ namespace Balatro
             }
         }
 
-        private void SwapCard(Card card)
+        protected void SwapCard(Card card)
         {
             _isCrossing = true;
             var selectedCardSlot = _selectedCard.transform.parent.GetComponent<CardSlot>();
@@ -128,7 +141,7 @@ namespace Balatro
             card.SetupOriginTransform(newPos, selectedCardSlot.CardLocalRotation);
         }
         
-        private void SwapCard(Card cardA, Card cardB)
+        protected void SwapCard(Card cardA, Card cardB)
         {
             _isCrossing = true;
             var cardASlot = cardA.transform.parent.GetComponent<CardSlot>();
@@ -142,7 +155,7 @@ namespace Balatro
 
         }
 
-        private void EndDragCard()
+        protected void EndDragCard()
         {
             _selectedCard = null;
         }
@@ -150,7 +163,7 @@ namespace Balatro
         
 
 
-        private void GetCardData()
+        protected void GetCardData()
         {
             _cardData = new List<CardData>();
             var cardData = Resources.Load<TextAsset>("Config/Card/NormalCard");
@@ -160,23 +173,33 @@ namespace Balatro
             }
         }
 
-        private Card CreateCard(CardData data, int i)
+        protected void GenerateSlotCard(int numberOfCard)
         {
-            var cardSlot = Instantiate(_cardSlotPrefab, _cardParent);
-            cardSlot.name = $"Slot-{i}";
-            if (_isAlignment)
+            _slots = new List<CardSlot>();
+            for (int i = 0; i < _numberOfCard; i++)
             {
-                InitCardTransformValue(cardSlot, i);
+                var cardSlot = Instantiate(_cardSlotPrefab, _cardParent);
+                cardSlot.name = $"Slot-{i}";
+                _slots.Add(cardSlot);
+
+                if (_isAlignment)
+                {
+                    InitCardTransformValue(cardSlot, i);
+                }
             }
-            var card = Instantiate(_cardPrefab, cardSlot.transform);
+        }
+
+        protected Card CreateCard(CardData data, CardSlot slot)
+        {
+            var card = Instantiate(_cardPrefab, slot.transform);
             var sprite = _cardAsset.GetCardSprite(data.Type, data.ID);
             card.Init(data);
             card.SetupView(sprite);
-            card.SetupOriginTransform(cardSlot.CardPosition, cardSlot.CardLocalRotation);
+            card.SetupOriginTransform(slot.CardPosition, slot.CardLocalRotation);
             return card;
         }
         
-        private void InitCardTransformValue(CardSlot slot, int index)
+        protected void InitCardTransformValue(CardSlot slot, int index)
         {
             var mid = _numberOfCard / 2;
             var value = mid - index;
@@ -184,6 +207,39 @@ namespace Balatro
             float rotationZ = value;
 
             slot.SetCardTransform(new Vector2(0, y),new Vector3(0f, 0f, rotationZ));
+        }
+
+        public void Refresh()
+        {
+            var currentCards = _cards;
+            // foreach (var card in currentCards)
+            // {
+            //     card.transform.SetParent(transform);
+            //     var cardSlot = card.GetCardSlot();
+            //     // card.SetCardSlot(null);
+            // }
+            foreach (var slot in _slots)
+            {
+                if (slot.transform.childCount == 0)
+                {
+                    Destroy(slot.gameObject);
+                }
+            }
+            
+            // GenerateSlotCard(currentCards.Count);
+            //
+            //
+            // for (int i = 0; i < currentCards.Count; i++)
+            // {
+            //     var slot = _slots[i];
+            //     var newPos = slot.CardPosition;
+            //
+            //     var card = _cards[i];
+            //     
+            //     card.SetCardSlot(slot);
+            //     card.SetupOriginTransform(newPos, slot.CardLocalRotation);
+            // }
+            
         }
 
         public void Sort(List<Card> cardsSorted)

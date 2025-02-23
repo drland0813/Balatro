@@ -15,9 +15,10 @@ namespace GamePlay
     }
     public class GamePlayController : MonoBehaviour, IGameLogic
     {
-        [SerializeField] private HorizontalCardHolder _playerHandCard;
+        [SerializeField] private PlayerHandCardHolder _playerHandCard;
         [SerializeField] private HorizontalCardHolder _jokerCard;
         [SerializeField] private HorizontalCardHolder _specialCard;
+        [SerializeField] private TableCardHolder _tableCardHolder;
 
         public Action OnWin;
         public Action OnLose;
@@ -29,9 +30,18 @@ namespace GamePlay
 
         public void Init()
         {
+            _tableCardHolder.OnGetCardComplete = CalculateScore;
+            
             _playerHandCard.Init();
             _jokerCard.Init();
             _specialCard.Init();
+            _tableCardHolder.Init(false);
+        }
+
+        private void CalculateScore()
+        {
+            _playerHandCard.Refresh();
+
         }
 
         public void SortCardByRank()
@@ -132,6 +142,19 @@ namespace GamePlay
                 originalSlots.Add(card.GetCardSlot());
             }
             return originalSlots;
+        }
+
+        public void PlayHand()
+        {
+            var playerHandCards = _playerHandCard.GetCardsAreChosen();
+            if (playerHandCards.Count > 5) return;
+
+            _tableCardHolder.GetCards(playerHandCards);
+        }
+
+        public void Discard()
+        {
+            // _playerHandCard.DisCard();
         }
     }
 }

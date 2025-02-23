@@ -58,6 +58,8 @@ namespace Balatro
         public Action<Card> OnBeginDragAction;
         public Action OnDragAction;
         public Action OnEndDragAction;
+        public Action<Card> OnClick;
+        
 
         private void Awake()
         {
@@ -177,7 +179,14 @@ namespace Balatro
         {
             if (_isDragging) return;
 
+            UpdateChosenState();
+
+        }
+
+        public void UpdateChosenState()
+        {
             IsChosen = !IsChosen;
+            OnClick?.Invoke(this);
             var sequence = DOTween.Sequence();
 
             var y = _rectTransform.anchoredPosition.y;
@@ -195,6 +204,11 @@ namespace Balatro
 
         public void SetCardSlot(CardSlot cardSlot)
         {
+            if (cardSlot == null)
+            {
+                _cardSlot = null;
+                return;
+            }
             _cardSlot = cardSlot;
             transform.SetParent(cardSlot.transform);
         }
