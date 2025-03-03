@@ -8,6 +8,7 @@ namespace Balatro
     public class PlayerHandCardHolder : HorizontalCardHolder
     {
         [SerializeField] private GameObject _buttonGroup;
+        public event Action OnCardClicked;
         public override void ClickOnCard(Card targetCard)
         {
             if (targetCard.IsChosen)
@@ -20,6 +21,8 @@ namespace Balatro
                 if (!_chosenCards.Contains(targetCard)) return;
                 _chosenCards.Remove(targetCard);
             }
+
+            OnCardClicked?.Invoke();
         }
 
         public List<Card> GetCardsAreChosen()
