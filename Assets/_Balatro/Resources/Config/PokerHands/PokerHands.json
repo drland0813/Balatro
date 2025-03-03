@@ -1,0 +1,16 @@
+{
+  "hands": [
+    { "id": 1, "name": "High Card", "point": 5, "multiplier": 1, "level_bonus": { "point": 1, "multiplier": 1 } },
+    { "id": 2, "name": "Pair", "point": 10, "multiplier": 2, "level_bonus": { "point": 2, "multiplier": 2 } },
+    { "id": 3, "name": "Two Pair", "point": 20, "multiplier": 2, "level_bonus": { "point": 3, "multiplier": 2 } },
+    { "id": 4, "name": "Three of a Kind", "point": 30, "multiplier": 3, "level_bonus": { "point": 4, "multiplier": 3 } },
+    { "id": 5, "name": "Straight", "point": 30, "multiplier": 4, "level_bonus": { "point": 5, "multiplier": 4 } },
+    { "id": 6, "name": "Flush", "point": 35, "multiplier": 4, "level_bonus": { "point": 6, "multiplier": 4 } },
+    { "id": 7, "name": "Full House", "point": 40, "multiplier": 4, "level_bonus": { "point": 7, "multiplier": 4 } },
+    { "id": 8, "name": "Four of a Kind", "point": 60, "multiplier": 7, "level_bonus": { "point": 10, "multiplier": 7 } },
+    { "id": 9, "name": "Five of a Kind", "point": 80, "multiplier": 8, "level_bonus": { "point": 12, "multiplier": 8 } },
+    { "id": 10, "name": "Straight Flush", "point": 100, "multiplier": 9, "level_bonus": { "point": 15, "multiplier": 9 } },
+    { "id": 11, "name": "Flush Full House", "point": 120, "multiplier": 10, "level_bonus": { "point": 18, "multiplier": 10 } },
+    { "id": 12, "name": "Flush Five of a Kind", "point": 150, "multiplier": 12, "level_bonus": { "point": 20, "multiplier": 12 } }
+  ]
+}

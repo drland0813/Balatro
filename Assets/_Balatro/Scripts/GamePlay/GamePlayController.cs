@@ -25,6 +25,14 @@ namespace GamePlay
         public Action OnWin;
         public Action OnLose;
 
+        private void Start()
+        {
+            if (_playerHandCard != null)
+            {
+                _playerHandCard.OnCardClicked += CheckPokerHandsInfo;
+            }
+        }
+
         public void BackToMainMenu()
         {
             OnLose?.Invoke();
@@ -33,7 +41,7 @@ namespace GamePlay
         public void Init()
         {
             _tableCardHolder.OnPlayEffectFinish = _scoreManager.UpdateScore;
-            
+
             _playerHandCard.Init();
             _jokerCard.Init();
             _specialCard.Init();
@@ -149,12 +157,16 @@ namespace GamePlay
         {
             var playerHandCards = _playerHandCard.GetCardsAreChosen();
             if (playerHandCards.Count > 5) return;
+
+            _tableCardHolder.GetCardsData(playerHandCards);
+            UpdatePokerHandsInfo(_tableCardHolder.Cards);
+
             foreach (var card in playerHandCards)
             {
                 card.CanInteract = false;
                 card.IsChosen = false;
             }
-            _tableCardHolder.GetCardsData(playerHandCards);
+
             _playerHandCard.MoveY(callback: () =>
             {
                 _tableCardHolder.GenerateCards();
@@ -164,6 +176,21 @@ namespace GamePlay
         public void Discard()
         {
             // _playerHandCard.DisCard();
+        }
+
+        private void CheckPokerHandsInfo()
+        {
+            if (_tableCardHolder.Cards == null || _tableCardHolder.Cards.Count == 0)
+            {
+                UpdatePokerHandsInfo(_playerHandCard.GetCardsAreChosen());
+            }
+        }
+
+        private void UpdatePokerHandsInfo(List<Card> chosenCards)
+        {
+            var type = PokerHandChecker.CheckHand(chosenCards);
+            var handData = PokerHandManager.Instance.GetHandById((int)type);
+            _scoreManager.SetCurrentPokerHand(handData);
         }
     }
 }
