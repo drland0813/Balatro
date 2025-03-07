@@ -30,7 +30,12 @@ namespace Balatro
 
         private List<PokerHand> _pokerHands;
 
-        private string savePath;
+        private string _savePath;
+
+        public List<PokerHand> GetPokerHands()
+        {
+            return _pokerHands;
+        }
 
         private void Awake()
         {
@@ -38,8 +43,8 @@ namespace Balatro
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                savePath = Path.Combine(Application.persistentDataPath, "PokerHands.json");
-                Debug.Log(savePath);
+                _savePath = Path.Combine(Application.persistentDataPath, "PokerHands.json");
+                Debug.Log(_savePath);
             }
             else
             {
@@ -61,7 +66,7 @@ namespace Balatro
 
         public void StartNewGame(bool resetProgress = false)
         {
-            if (resetProgress || !File.Exists(savePath))
+            if (resetProgress || !File.Exists(_savePath))
             {
                 LoadPokerHandsFromJson();
             }
@@ -88,14 +93,14 @@ namespace Balatro
 
         private void LoadPokerHandsFromSave()
         {
-            string json = File.ReadAllText(savePath);
+            string json = File.ReadAllText(_savePath);
             _pokerHands = JsonUtility.FromJson<PokerHandsConfig>(json).hands;
         }
 
         public void SaveProgress()
         {
             string json = JsonUtility.ToJson(new PokerHandsConfig { hands = _pokerHands });
-            File.WriteAllText(savePath, json);
+            File.WriteAllText(_savePath, json);
         }
 
         public void LevelUpHand(int id)
@@ -203,7 +208,7 @@ namespace Balatro
             }
             return false;
         }
-        
+
         public static List<CardData> GenerateHandByType(PokerHandType type, List<CardData> availableCards, int numberCards)
         {
             List<CardData> hand = new List<CardData>();
@@ -216,7 +221,7 @@ namespace Balatro
                 hand.AddRange(matchingCards);
                 remainingCards.RemoveAll(card => matchingCards.Contains(card));
             }
-            
+
             if (type == PokerHandType.TwoPair)
             {
                 var valueGroups = remainingCards.GroupBy(c => c.Value).Where(g => g.Count() >= 2).ToList();
@@ -235,7 +240,7 @@ namespace Balatro
             {
                 var triplet = remainingCards.GroupBy(c => c.Value).FirstOrDefault(g => g.Count() >= 3);
                 var pair = remainingCards.GroupBy(c => c.Value).FirstOrDefault(g => g.Count() >= 2 && g.Key != triplet?.Key);
-                
+
                 if (triplet != null && pair != null)
                 {
                     AddCardsWithSameValue(triplet.Key, 3);
@@ -267,13 +272,13 @@ namespace Balatro
                 var suitGroup = remainingCards.GroupBy(c => c.Type).FirstOrDefault(g => g.Count() >= 5);
                 if (suitGroup != null) hand.AddRange(suitGroup.Take(5));
             }
-            
+
             while (hand.Count < numberCards && remainingCards.Count > 0)
             {
                 hand.Add(remainingCards[rng.Next(remainingCards.Count)]);
                 remainingCards.Remove(hand.Last());
             }
-            
+
             return hand;
         }
 

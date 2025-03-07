@@ -13,6 +13,7 @@ namespace Balatro
         public int multiplier;
         public LevelBonus level_bonus;
         public int level = 1;
+        public int numberOfTimes = 0;
 
         public void LevelUp()
         {
