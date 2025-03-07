@@ -39,6 +39,10 @@ namespace Balatro
             Type = type;
             Description = description;
         }
+
+        public CardData()
+        {
+        }
     }
 
     public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, IPointerDownHandler
@@ -61,8 +65,8 @@ namespace Balatro
         public Action<Card> OnClick;
 
         public bool CanInteract = true;
-        
 
+        private Sequence _moveTween;
         private void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
@@ -204,14 +208,16 @@ namespace Balatro
             var y = _rectTransform.anchoredPosition.y;
             y += isChosen ? 40 : -40;
 
+            if (!_rectTransform) return;
+
             sequence.Append(_rectTransform.DOScale(1.2f, 0.025f))
                 .Append(_rectTransform.DOAnchorPosY(y, 0.1f))
                 .Append(_rectTransform.DOScale(1f, 0.025f));
         }
 
-        public void SetupOriginTransform(Vector3 pos, Vector3 rot)
+        public void SetupOriginTransform(Vector3 pos, Vector3 rot, bool playIdleEffect = true)
         {
-            _transfromEffect.SetupOriginTransform(pos, rot);
+            _transfromEffect.SetupOriginTransform(pos, rot, playIdleEffect);
         }
 
         public void SetCardSlot(CardSlot cardSlot)
@@ -240,5 +246,30 @@ namespace Balatro
             return _cardSlot;
         }
 
+        public void DoPunch(float duration = 0f, float strength = 0f)
+        {
+            gameObject.transform.DOPunchScale(Vector3.one * strength, duration);
+        }
+
+        public void DoClear(float duration = 0f)
+        {
+            var currentPos = gameObject.transform.position;
+            var newPos = currentPos;
+            newPos.x += 20;
+
+            if (gameObject != null)
+            {
+                _moveTween = DOTween.Sequence();
+                _view.EnableBackCard(true);
+                _moveTween.Append(gameObject.transform.DORotate(new Vector3(0, -150, 0), 0.2f).SetEase(Ease.InSine))
+                    .Append(gameObject.transform.DOMoveX(newPos.x, duration).SetEase(Ease.OutSine));
+            }
+
+        }
+
+        private void OnDestroy()
+        {
+            _moveTween.Kill();
+        }
     }
 }

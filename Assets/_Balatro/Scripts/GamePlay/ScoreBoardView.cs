@@ -1,4 +1,6 @@
+using System;
 using Balatro;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,10 +28,18 @@ namespace GamePlay
         [SerializeField] private TextMeshProUGUI _AnteNumber;
         [SerializeField] private TextMeshProUGUI _RoundNumber;
 
+        [SerializeField] private ChipScoreUI _chipScoreUI;
+        private string _scoreIconText;
+
+        private void Start()
+        {
+            _scoreIconText = _scoreText.text;
+            UpdateScore(0);
+        }
 
         public void UpdateScore(int score)
         {
-            _scoreText.text += score.ToString();
+            _scoreText.text = _scoreIconText + score;
         }
 
         public void UpdatePokerHandsInformation(PokerHand pokerHand)
@@ -47,6 +57,26 @@ namespace GamePlay
             _pokerHandsLevel.text = "Lv" + pokerHand.level;
             _pokerHandsPoint.text = pokerHand.point.ToString();
             _pokerHandsMultiplier.text = pokerHand.multiplier.ToString();
+        }
+
+        public void UpdatePokerHandsScore(PokerHand pokerHand)
+        {
+            _pokerHandsPoint.text = pokerHand.point.ToString();
+            _pokerHandsMultiplier.text = pokerHand.multiplier.ToString();
+        }
+
+        public void ShowChipScore(int chip, Vector3 position)
+        {
+            var newPos = position;
+            newPos.y += 1f;
+            var newYValue = newPos.y + 1f;
+
+            _chipScoreUI.transform.position = newPos;
+            _chipScoreUI.Init(chip);
+            _chipScoreUI.transform.DOMoveY(newYValue, 0.5f).OnComplete(() =>
+            {
+                _chipScoreUI.Show(false);
+            });
         }
     }
 }

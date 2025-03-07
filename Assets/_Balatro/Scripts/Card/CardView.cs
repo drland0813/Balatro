@@ -28,5 +28,11 @@ namespace Balatro
             pos.y = enable ? -30 : -10;
             _shadow.rectTransform.anchoredPosition = pos;
         }
+
+        public void EnableBackCard(bool enable)
+        {
+            if (_backImg.gameObject.activeSelf == enable) return;
+            _backImg.gameObject.SetActive(enable);
+        }
     }
 }

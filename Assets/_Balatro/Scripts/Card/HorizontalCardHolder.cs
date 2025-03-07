@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
@@ -43,34 +44,81 @@ namespace Balatro
         public List<Card> Cards => _cards;
         public List<Card> ChosenCards => _chosenCards;
 
-        public void Init()
+        public virtual void Init()
         {
             GetCardData();
             GenerateSlotCard(_numberOfCard);
-            GenerateCards();
+            GenerateCards(_numberOfCard);
         }
+        
+        public void AddNewCards()
+        {
+            var count = _numberOfCard - _cards.Count;
+            GenerateSlotCard(count, false);
+            GenerateCards(_numberOfCard, false);
+            AlignmentCard();
+        }
+        
+        protected void GenerateCardsByPokerType(PokerHandType type)
+        {
+            _cards = new List<Card>();
+            _chosenCards = new List<Card>();
+            var cardsData = PokerHandChecker.GenerateHandByType(type, _cardData, _numberOfCard);
+            var dataIndex = 0;
+            for (var i = 0; i < _slots.Count; i++)
+            {
+                var cardSlot = _slots[i];
+                var cardData = cardsData[i];
+                dataIndex++;
+                var card = CreateCard(cardData, cardSlot);
+                card.OnBeginDragAction = BeginDragCard;
+                card.OnDragAction = DraggingCard;
+                card.OnEndDragAction = EndDragCard;
+                card.OnClick = ClickOnCard;
 
-        private void GenerateCards()
+                _cards.Add(card);
+            }
+        }
+        
+
+        protected void GenerateCards(int numberOfCards, bool isNewCardsList = true)
         {
             _chosenCards = new List<Card>();
-            _cards = new List<Card>();
+            if (isNewCardsList)
+            {
+                _cards = new List<Card>();
+            }
             var randomCards = new List<CardData>();
     
             var random = new System.Random();
 
             var tempCards = new List<CardData>(_cardData);
 
-            for (var i = 0; i < _numberOfCard && tempCards.Count > 0; i++)
+            for (var i = 0; i < numberOfCards && tempCards.Count > 0; i++)
             {
                 var randomIndex = random.Next(0, tempCards.Count);
                 randomCards.Add(tempCards[randomIndex]);
                 tempCards.RemoveAt(randomIndex);
             }
 
+            var dataIndex = 0;
             for (var i = 0; i < _slots.Count; i++)
             {
+                if (!isNewCardsList)
+                {
+                    if (_slots[i] != null)
+                    {
+                        if (_slots[i].transform.childCount != 0)
+                        {
+                            Debug.Log($"slot {_slots[i].name}");
+                            continue;
+                        }
+                    }
+
+                }
                 var cardSlot = _slots[i];
-                var cardData = randomCards[i];
+                var cardData = randomCards[dataIndex];
+                dataIndex++;
                 var card = CreateCard(cardData, cardSlot);
                 card.OnBeginDragAction = BeginDragCard;
                 card.OnDragAction = DraggingCard;
@@ -171,10 +219,13 @@ namespace Balatro
             }
         }
 
-        protected void GenerateSlotCard(int numberOfCard)
+        protected void GenerateSlotCard(int totalSlot, bool isNewCardsList = true)
         {
-            _slots = new List<CardSlot>();
-            for (int i = 0; i < numberOfCard; i++)
+            if (isNewCardsList)
+            {
+                _slots = new List<CardSlot>();
+            }
+            for (int i = 0; i < totalSlot; i++)
             {
                 var cardSlot = Instantiate(_cardSlotPrefab, _cardParent);
                 cardSlot.name = $"Slot-{i}";
@@ -182,8 +233,19 @@ namespace Balatro
 
                 if (_isAlignment)
                 {
-                    InitCardTransformValue(cardSlot, i);
+                    InitCardTransformValue(cardSlot, i, totalSlot);
                 }
+            }
+        }
+
+        public void AlignmentCard()
+        {
+            for (var i = 0; i < _cards.Count; i++)
+            {
+                var slot = _cards[i].GetCardSlot();
+                var card = _cards[i];
+                InitCardTransformValue(slot, i, _cards.Count);
+                card.SetupOriginTransform(slot.CardPosition, slot.CardLocalRotation);
             }
         }
 
@@ -197,47 +259,44 @@ namespace Balatro
             return card;
         }
         
-        protected void InitCardTransformValue(CardSlot slot, int index)
+        protected void InitCardTransformValue(CardSlot slot, int index, int totalSlot)
         {
-            var mid = _numberOfCard / 2;
+            var mid = totalSlot / 2;
             var value = mid - index;
-            float y = 10 * (index >= mid ? (_numberOfCard - (index + 1)) : index);
+            float y = 10 * (index >= mid ? (totalSlot - (index + 1)) : index);
             float rotationZ = value;
 
             slot.SetCardTransform(new Vector2(0, y),new Vector3(0f, 0f, rotationZ));
         }
 
-        public void Refresh()
+        public void Refresh(bool justClearEmptySlot = true)
         {
-            var currentCards = _cards;
-            // foreach (var card in currentCards)
-            // {
-            //     card.transform.SetParent(transform);
-            //     var cardSlot = card.GetCardSlot();
-            //     // card.SetCardSlot(null);
-            // }
-            foreach (var slot in _slots)
+            if (justClearEmptySlot)
             {
-                if (slot.transform.childCount == 0)
+                foreach (var slot in _slots.ToList())
                 {
-                    Destroy(slot.gameObject);
+                    if (slot.transform.childCount == 0)
+                    {
+                        _slots.Remove(slot);
+                        Destroy(slot.gameObject);
+                    }
                 }
             }
-            
-            // GenerateSlotCard(currentCards.Count);
-            //
-            //
-            // for (int i = 0; i < currentCards.Count; i++)
-            // {
-            //     var slot = _slots[i];
-            //     var newPos = slot.CardPosition;
-            //
-            //     var card = _cards[i];
-            //     
-            //     card.SetCardSlot(slot);
-            //     card.SetupOriginTransform(newPos, slot.CardLocalRotation);
-            // }
-            
+            else
+            {
+                foreach (var slot in _slots.ToList())
+                {
+                    if (slot.transform.childCount != 0)
+                    {
+                        _slots.Remove(slot);
+                        var card = slot.GetComponent<Card>();
+                        Destroy(card?.gameObject);
+                    }
+                    Destroy(slot.gameObject);
+                }
+
+            }
+            AlignmentCard();
         }
 
         public void Sort(List<Card> cardsSorted)

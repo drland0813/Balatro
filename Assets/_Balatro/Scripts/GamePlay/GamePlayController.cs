@@ -24,14 +24,7 @@ namespace GamePlay
 
         public Action OnWin;
         public Action OnLose;
-
-        private void Start()
-        {
-            if (_playerHandCard != null)
-            {
-                _playerHandCard.OnCardClicked += CheckPokerHandsInfo;
-            }
-        }
+        
 
         public void BackToMainMenu()
         {
@@ -40,7 +33,20 @@ namespace GamePlay
 
         public void Init()
         {
-            _tableCardHolder.OnPlayEffectFinish = _scoreManager.UpdateScore;
+            _tableCardHolder.OnPlayEffectStart = () =>
+            {
+                _playerHandCard.Refresh();
+            };
+            _tableCardHolder.OnPlayEffectFinish += _scoreManager.UpdateScore;
+            _tableCardHolder.OnPlayEffectFinish += () =>
+            {
+                _scoreManager.SetCurrentPokerHand(null);
+                _playerHandCard.AddNewCards();
+                _playerHandCard.MoveY(moveDown: false);
+            };
+
+            _tableCardHolder.OnExecuteCard += _scoreManager.ShowChipScore;
+            _playerHandCard.OnCardClicked += CheckPokerHandsInfo;
 
             _playerHandCard.Init();
             _jokerCard.Init();
@@ -49,7 +55,6 @@ namespace GamePlay
 
         private void CalculateScore()
         {
-            _playerHandCard.Refresh();
 
         }
 

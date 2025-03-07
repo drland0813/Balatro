@@ -1,4 +1,5 @@
-﻿using Balatro;
+﻿using System;
+using Balatro;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -22,10 +23,16 @@ namespace GamePlay
         {
             set => _view.UpdateScore(value);
         }
+        
+        private int _currentHandsScore
+        {
+            get => GetCurrentHandsScore();
+            set => _view.UpdateScore(value);
+        }
 
         public void UpdateScore()
         {
-            _score = CalculateScore();
+            _score = GetCurrentHandsScore();
         }
 
         public void SetCurrentPokerHand(PokerHand pokerHand)
@@ -38,8 +45,13 @@ namespace GamePlay
         {
             _view.UpdatePokerHandsInformation(_currentPokerHand);
         }
+        
+        private void UpdatePokerHandsScore()
+        {
+            _view.UpdatePokerHandsScore(_currentPokerHand);
+        }
 
-        private int CalculateScore()
+        private int GetCurrentHandsScore()
         {
             if (_currentPokerHand == null)
                 return 0;
@@ -47,5 +59,11 @@ namespace GamePlay
             return _currentPokerHand.point * _currentPokerHand.multiplier;
         }
 
+        public void ShowChipScore(int chip, Vector3 position)
+        {
+            _currentPokerHand.point += chip;
+            _view.ShowChipScore(chip, position);
+            UpdatePokerHandsScore();
+        }
     }
 }

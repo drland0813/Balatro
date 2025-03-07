@@ -66,6 +66,8 @@ MonoBehaviour:
     Chip: 0
     Type: 0
     Description: 
+  IsChosen: 0
+  CanInteract: 1
 --- !u!114 &474134428714613753
 MonoBehaviour:
   m_ObjectHideFlags: 0

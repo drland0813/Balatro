@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace Balatro
         public static PokerHandManager Instance { get; private set; }
 
         private List<PokerHand> _pokerHands;
+
         private string savePath;
 
         private void Awake()
@@ -36,7 +38,8 @@ namespace Balatro
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                savePath = Path.Combine(Application.persistentDataPath, "PokerHandsSave.json");
+                savePath = Path.Combine(Application.persistentDataPath, "PokerHands.json");
+                Debug.Log(savePath);
             }
             else
             {
@@ -200,6 +203,80 @@ namespace Balatro
             }
             return false;
         }
+        
+        public static List<CardData> GenerateHandByType(PokerHandType type, List<CardData> availableCards, int numberCards)
+        {
+            List<CardData> hand = new List<CardData>();
+            List<CardData> remainingCards = new List<CardData>(availableCards);
+            System.Random rng = new System.Random();
+
+            void AddCardsWithSameValue(int value, int count)
+            {
+                var matchingCards = remainingCards.Where(card => card.Value == value).Take(count).ToList();
+                hand.AddRange(matchingCards);
+                remainingCards.RemoveAll(card => matchingCards.Contains(card));
+            }
+            
+            if (type == PokerHandType.TwoPair)
+            {
+                var valueGroups = remainingCards.GroupBy(c => c.Value).Where(g => g.Count() >= 2).ToList();
+                if (valueGroups.Count >= 2)
+                {
+                    AddCardsWithSameValue(valueGroups[0].Key, 2);
+                    AddCardsWithSameValue(valueGroups[1].Key, 2);
+                }
+            }
+            else if (type == PokerHandType.ThreeOfAKind)
+            {
+                var triplet = remainingCards.GroupBy(c => c.Value).FirstOrDefault(g => g.Count() >= 3);
+                if (triplet != null) AddCardsWithSameValue(triplet.Key, 3);
+            }
+            else if (type == PokerHandType.FullHouse)
+            {
+                var triplet = remainingCards.GroupBy(c => c.Value).FirstOrDefault(g => g.Count() >= 3);
+                var pair = remainingCards.GroupBy(c => c.Value).FirstOrDefault(g => g.Count() >= 2 && g.Key != triplet?.Key);
+                
+                if (triplet != null && pair != null)
+                {
+                    AddCardsWithSameValue(triplet.Key, 3);
+                    AddCardsWithSameValue(pair.Key, 2);
+                }
+            }
+            else if (type == PokerHandType.FourOfAKind)
+            {
+                var quad = remainingCards.GroupBy(c => c.Value).FirstOrDefault(g => g.Count() >= 4);
+                if (quad != null) AddCardsWithSameValue(quad.Key, 4);
+            }
+            else if (type == PokerHandType.Straight)
+            {
+                var sortedValues = remainingCards.Select(c => c.Value).Distinct().OrderBy(v => v).ToList();
+                for (int i = 0; i <= sortedValues.Count - 5; i++)
+                {
+                    if (sortedValues[i + 4] - sortedValues[i] == 4)
+                    {
+                        for (int j = 0; j < 5; j++)
+                        {
+                            hand.Add(remainingCards.First(c => c.Value == sortedValues[i + j]));
+                        }
+                        break;
+                    }
+                }
+            }
+            else if (type == PokerHandType.Flush)
+            {
+                var suitGroup = remainingCards.GroupBy(c => c.Type).FirstOrDefault(g => g.Count() >= 5);
+                if (suitGroup != null) hand.AddRange(suitGroup.Take(5));
+            }
+            
+            while (hand.Count < numberCards && remainingCards.Count > 0)
+            {
+                hand.Add(remainingCards[rng.Next(remainingCards.Count)]);
+                remainingCards.Remove(hand.Last());
+            }
+            
+            return hand;
+        }
+
     }
 
 }

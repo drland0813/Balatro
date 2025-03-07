@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace Balatro
@@ -8,7 +9,22 @@ namespace Balatro
     public class PlayerHandCardHolder : HorizontalCardHolder
     {
         [SerializeField] private GameObject _buttonGroup;
+        [SerializeField] private PokerHandType _pokerHandType;
+
         public event Action OnCardClicked;
+
+        public override void Init()
+        {
+            GetCardData();
+            GenerateSlotCard(_numberOfCard);
+            if (_pokerHandType == PokerHandType.None)
+                GenerateCards(_numberOfCard);
+            else
+            {
+                GenerateCardsByPokerType(_pokerHandType);
+            }
+        }
+
         public override void ClickOnCard(Card targetCard)
         {
             if (targetCard.IsChosen)
@@ -48,6 +64,14 @@ namespace Balatro
         {
             DoMoveY(1.7f, callback, moveDown);
             _buttonGroup.SetActive(!moveDown);
+        }
+
+        [Button("Re-Gen")]
+        public void ReGenerateCardByType()
+        {
+            Refresh(false);
+            GenerateSlotCard(_numberOfCard);
+            GenerateCardsByPokerType(_pokerHandType);
         }
     }
 }
