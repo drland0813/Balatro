@@ -1,6 +1,6 @@
 {
     "Cards":[
-        { "ID": "1s", "Value": 1, "Chip": 11, "Type": 1, "Description": "" },
+        { "ID": "1s", "Value": 14, "Chip": 11, "Type": 1, "Description": "" },
         { "ID": "2s", "Value": 2, "Chip": 2, "Type": 1, "Description": "" },
         { "ID": "3s", "Value": 3, "Chip": 3, "Type": 1, "Description": "" },
         { "ID": "4s", "Value": 4, "Chip": 4, "Type": 1, "Description": "" },
@@ -14,7 +14,7 @@
         { "ID": "12s", "Value": 12, "Chip": 12, "Type": 1, "Description": "" },
         { "ID": "13s", "Value": 13, "Chip": 13, "Type": 1, "Description": "" },
 
-        { "ID": "1c", "Value": 1, "Chip": 11, "Type": 2, "Description": "" },
+        { "ID": "1c", "Value": 14, "Chip": 11, "Type": 2, "Description": "" },
         { "ID": "2c", "Value": 2, "Chip": 2, "Type": 2, "Description": "" },
         { "ID": "3c", "Value": 3, "Chip": 3, "Type": 2, "Description": "" },
         { "ID": "4c", "Value": 4, "Chip": 4, "Type": 2, "Description": "" },
@@ -28,7 +28,7 @@
         { "ID": "12c", "Value": 12, "Chip": 12, "Type": 2, "Description": "" },
         { "ID": "13c", "Value": 13, "Chip": 13, "Type": 2, "Description": "" },
 
-        { "ID": "1d", "Value": 1, "Chip": 11, "Type": 3, "Description": "" },
+        { "ID": "1d", "Value": 14, "Chip": 11, "Type": 3, "Description": "" },
         { "ID": "2d", "Value": 2, "Chip": 2, "Type": 3, "Description": "" },
         { "ID": "3d", "Value": 3, "Chip": 3, "Type": 3, "Description": "" },
         { "ID": "4d", "Value": 4, "Chip": 4, "Type": 3, "Description": "" },
@@ -42,7 +42,7 @@
         { "ID": "12d", "Value": 12, "Chip": 12, "Type": 3, "Description": "" },
         { "ID": "13d", "Value": 13, "Chip": 13, "Type": 3, "Description": "" },
 
-        { "ID": "1h", "Value": 1, "Chip": 11, "Type": 4, "Description": "" },
+        { "ID": "1h", "Value": 14, "Chip": 11, "Type": 4, "Description": "" },
         { "ID": "2h", "Value": 2, "Chip": 2, "Type": 4, "Description": "" },
         { "ID": "3h", "Value": 3, "Chip": 3, "Type": 4, "Description": "" },
         { "ID": "4h", "Value": 4, "Chip": 4, "Type": 4, "Description": "" },

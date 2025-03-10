@@ -76,10 +76,7 @@ namespace GamePlay
 
         public List<Card> SortCardByRank(List<Card> cards)
         {
-            var sortedCards = cards.OrderBy(card => card.GetCardData().Value == 1 ? int.MaxValue : card.GetCardData().Value)
-                       .ThenBy(card => (CardType)card.GetCardData().Type)
-                       .ToList();
-
+            var sortedCards = cards.OrderBy(card => card.GetCardData().Value).ThenBy(card => (CardType)card.GetCardData().Type).ToList();
 
             List<CardSlot> originalSlots = GetListCardSlotByPositionX(cards);
 
@@ -106,9 +103,7 @@ namespace GamePlay
 
         public List<Card> SortCardBySuit(List<Card> cards)
         {
-            var sortedCards = cards.OrderBy(card => GetCardTypePriority((CardType)card.GetCardData().Type))
-                       .ThenBy(card => card.GetCardData().Value == 1 ? int.MaxValue : card.GetCardData().Value)
-                       .ToList();
+            var sortedCards = cards.OrderBy(card => GetCardTypePriority((CardType)card.GetCardData().Type)).ThenBy(card => card.GetCardData().Value).ToList();
 
 
             List<CardSlot> originalSlots = GetListCardSlotByPositionX(cards);
@@ -163,8 +158,11 @@ namespace GamePlay
             var playerHandCards = _playerHandCard.GetCardsAreChosen();
             if (playerHandCards.Count > 5) return;
 
+            var type = PokerHandChecker.CheckHand(playerHandCards);
+            UpdatePokerHandsInfo(type);
             _tableCardHolder.GetCardsData(playerHandCards);
-            UpdatePokerHandsInfo(_tableCardHolder.Cards);
+            _tableCardHolder.SetCardsOnPokerHands(PokerHandChecker.GetHandCards(playerHandCards, type));
+
 
             foreach (var card in playerHandCards)
             {
@@ -194,6 +192,12 @@ namespace GamePlay
         private void UpdatePokerHandsInfo(List<Card> chosenCards)
         {
             var type = PokerHandChecker.CheckHand(chosenCards);
+            var handData = PokerHandManager.Instance.GetHandById((int)type);
+            _scoreManager.SetCurrentPokerHand(handData);
+        }
+
+        private void UpdatePokerHandsInfo(PokerHandType type)
+        {
             var handData = PokerHandManager.Instance.GetHandById((int)type);
             _scoreManager.SetCurrentPokerHand(handData);
         }
