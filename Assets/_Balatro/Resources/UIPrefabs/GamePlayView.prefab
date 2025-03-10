@@ -159,7 +159,6 @@ RectTransform:
   m_Children:
   - {fileID: 1303735138268729270}
   - {fileID: 350052388354909104}
-  - {fileID: 5067396022682381422}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1389,6 +1388,7 @@ RectTransform:
   m_Children:
   - {fileID: 4687826566793644050}
   - {fileID: 1399944412280854986}
+  - {fileID: 5067396022682381422}
   m_Father: {fileID: 350052388354909104}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1561,6 +1561,7 @@ GameObject:
   m_Component:
   - component: {fileID: 350052388354909104}
   - component: {fileID: 3548364861126662099}
+  - component: {fileID: 1736875845209219645}
   m_Layer: 5
   m_Name: SafeArea
   m_TagString: Untagged
@@ -1601,8 +1602,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConformX: 1
-  ConformY: 1
+  ConformY: 0
   Logging: 0
+--- !u!222 &1736875845209219645
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5028436023243022181}
+  m_CullTransparentMesh: 1
 --- !u!1 &5329078571165278672
 GameObject:
   m_ObjectHideFlags: 0
@@ -2956,12 +2965,20 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 4306541149985725552}
+    m_TransformParent: {fileID: 6903985473626730284}
     m_Modifications:
     - target: {fileID: 3211949919064949068, guid: da477c705938537489380b73490a97fb, type: 3}
       propertyPath: m_Name
       value: RunInfoView
       objectReference: {fileID: 0}
+    - target: {fileID: 3211949919064949068, guid: da477c705938537489380b73490a97fb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7650479411110981068, guid: da477c705938537489380b73490a97fb, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 8846098988937666527}
     - target: {fileID: 8107686041338164932, guid: da477c705938537489380b73490a97fb, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3065,6 +3082,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6903985473626730284}
     m_Modifications:
+    - target: {fileID: 2131330205835319381, guid: 32a8f4d0de42bda488c0c1a42284790d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2510893066062519177, guid: 32a8f4d0de42bda488c0c1a42284790d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3510072777697471985, guid: 32a8f4d0de42bda488c0c1a42284790d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 8846098988937666527}
     - target: {fileID: 3730470536609581329, guid: 32a8f4d0de42bda488c0c1a42284790d, type: 3}
       propertyPath: m_Name
       value: ScoreBoard
@@ -3147,6 +3176,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4086597306226026616, guid: 32a8f4d0de42bda488c0c1a42284790d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4869944742270296731, guid: 32a8f4d0de42bda488c0c1a42284790d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959689450537878743, guid: 32a8f4d0de42bda488c0c1a42284790d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8906937378581791892, guid: 32a8f4d0de42bda488c0c1a42284790d, type: 3}
+      propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

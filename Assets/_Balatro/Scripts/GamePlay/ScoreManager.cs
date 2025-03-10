@@ -23,7 +23,7 @@ namespace GamePlay
         {
             set => _view.UpdateScore(value);
         }
-        
+
         private int _currentHandsScore
         {
             get => GetCurrentHandsScore();
@@ -41,11 +41,16 @@ namespace GamePlay
             UpdatePokerHandsInformation();
         }
 
+        public PokerHand GetCurrentPokerHand()
+        {
+            return _currentPokerHand;
+        }
+
         private void UpdatePokerHandsInformation()
         {
             _view.UpdatePokerHandsInformation(_currentPokerHand);
         }
-        
+
         private void UpdatePokerHandsScore()
         {
             _view.UpdatePokerHandsScore(_currentPokerHand);

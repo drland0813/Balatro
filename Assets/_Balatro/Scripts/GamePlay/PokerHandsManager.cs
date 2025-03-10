@@ -282,6 +282,90 @@ namespace Balatro
             return hand;
         }
 
+        public static List<Card> GetHandCards(List<Card> playerHandCards, PokerHandType handType)
+        {
+            var result = new List<Card>();
+            var cardValues = playerHandCards.Select(card => card.GetCardData().Value).ToList();
+            var cardSuits = playerHandCards.Select(card => (CardType)card.GetCardData().Type).ToList();
+
+            var valueGroups = playerHandCards
+                .GroupBy(card => card.GetCardData().Value)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var suitGroups = playerHandCards
+                .GroupBy(card => (CardType)card.GetCardData().Type)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            List<Card> GetCardsForCount(int count)
+            {
+                return valueGroups
+                    .Where(pair => pair.Value.Count == count)
+                    .SelectMany(pair => pair.Value)
+                    .ToList();
+            }
+
+            switch (handType)
+            {
+                case PokerHandType.Pair:
+                    return GetCardsForCount(2);
+                case PokerHandType.TwoPair:
+                    return valueGroups
+                        .Where(pair => pair.Value.Count == 2)
+                        .OrderByDescending(pair => pair.Key)
+                        .Take(2)
+                        .SelectMany(pair => pair.Value)
+                        .ToList();
+                case PokerHandType.ThreeOfAKind:
+                    return GetCardsForCount(3);
+                case PokerHandType.FourOfAKind:
+                    return GetCardsForCount(4);
+                case PokerHandType.FiveOfAKind:
+                    return GetCardsForCount(5);
+                case PokerHandType.FullHouse:
+                    var three = valueGroups.FirstOrDefault(g => g.Value.Count == 3).Value;
+                    var pair = valueGroups.FirstOrDefault(g => g.Value.Count == 2).Value;
+                    if (three != null && pair != null)
+                        return three.Concat(pair).ToList();
+                    break;
+                case PokerHandType.Flush:
+                    return suitGroups.Values.FirstOrDefault(g => g.Count == 5);
+                case PokerHandType.Straight:
+                case PokerHandType.StraightFlush:
+                    var sorted = playerHandCards.OrderBy(c => c.GetCardData().Value).ToList();
+                    if (IsStraight(sorted.Select(c => c.GetCardData().Value).ToList()))
+                        return sorted;
+                    break;
+                case PokerHandType.FlushFullHouse:
+                    // Prioritize flush, then full house inside flush
+                    var flushCards = suitGroups.Values.FirstOrDefault(g => g.Count == 5);
+                    if (flushCards != null)
+                    {
+                        var flushValueGroups = flushCards.GroupBy(c => c.GetCardData().Value)
+                                                         .ToDictionary(g => g.Key, g => g.ToList());
+                        var threeFlush = flushValueGroups.FirstOrDefault(g => g.Value.Count == 3).Value;
+                        var pairFlush = flushValueGroups.FirstOrDefault(g => g.Value.Count == 2).Value;
+                        if (threeFlush != null && pairFlush != null)
+                            return threeFlush.Concat(pairFlush).ToList();
+                    }
+                    break;
+                case PokerHandType.FlushFiveOfAKind:
+                    foreach (var group in suitGroups)
+                    {
+                        var flushValueGroups = group.Value.GroupBy(c => c.GetCardData().Value)
+                                                          .Where(g => g.Count() == 5)
+                                                          .FirstOrDefault();
+                        if (flushValueGroups != null)
+                            return flushValueGroups.ToList();
+                    }
+                    break;
+                case PokerHandType.HighCard:
+                case PokerHandType.None:
+                default:
+                    return playerHandCards.OrderByDescending(c => c.GetCardData().Value).Take(1).ToList();
+            }
+
+            return result;
+        }
     }
 
 }
