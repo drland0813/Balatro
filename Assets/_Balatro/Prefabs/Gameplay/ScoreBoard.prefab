@@ -2473,6 +2473,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _view: {fileID: 4189671652722937181}
+  _gamePlayView: {fileID: 0}
+  gamePlayController: {fileID: 0}
 --- !u!1 &3896657437164899514
 GameObject:
   m_ObjectHideFlags: 0
@@ -2560,6 +2562,7 @@ GameObject:
   - component: {fileID: 7957183952194106377}
   - component: {fileID: 7548858012645952266}
   - component: {fileID: 7869353068442122495}
+  - component: {fileID: 5026072688374254081}
   m_Layer: 5
   m_Name: TextMoney
   m_TagString: Untagged
@@ -2683,6 +2686,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5026072688374254081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3977722488615946861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4e9d36a3647f754e8ac4a39127519fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moneyText: {fileID: 7869353068442122495}
 --- !u!1 &4347098971646876323
 GameObject:
   m_ObjectHideFlags: 0

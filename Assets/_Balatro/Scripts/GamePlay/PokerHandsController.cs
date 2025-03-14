@@ -24,9 +24,9 @@ namespace Balatro
         FlushFiveOfAKind = 12
     }
 
-    public class PokerHandManager : MonoBehaviour
+    public class PokerHandController : MonoBehaviour
     {
-        public static PokerHandManager Instance { get; private set; }
+        public static PokerHandController Instance { get; private set; }
 
         private List<PokerHand> _pokerHands;
 
@@ -52,12 +52,12 @@ namespace Balatro
             }
         }
 
-        public static PokerHandManager GetInstance()
+        public static PokerHandController GetInstance()
         {
             if (Instance == null)
             {
-                GameObject obj = new GameObject("PokerHandManager");
-                Instance = obj.AddComponent<PokerHandManager>();
+                GameObject obj = new GameObject("PokerHandController");
+                Instance = obj.AddComponent<PokerHandController>();
 
                 DontDestroyOnLoad(obj);
             }

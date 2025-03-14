@@ -12,8 +12,7 @@ namespace Balatro
 
         void Start()
         {
-
-            pokerHands = PokerHandManager.GetInstance().GetPokerHands();
+            pokerHands = PokerHandController.GetInstance().GetPokerHands();
             PopulatePokerHandList();
         }
 
