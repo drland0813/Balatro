@@ -7,6 +7,7 @@ namespace GamePlay
     {
 
         public GameObject _runInfoView;
+        public GameObject _rewardBreakdownView;
 
         public void EnableRunInfoUI()
         {
@@ -16,6 +17,16 @@ namespace GamePlay
         public void DisableRunInfoUI()
         {
             _runInfoView.SetActive(false);
+        }
+        
+        public void EnableRewardBreakdownUI()
+        {
+            _rewardBreakdownView.SetActive(true);
+        }
+
+        public void DisableRewardBreakdownUI()
+        {
+            _rewardBreakdownView.SetActive(false);
         }
     }
 }

@@ -1,38 +1,50 @@
 ﻿using System;
+using System.Collections;
 using Balatro;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
 namespace GamePlay
 {
-    public class ScoreManager : MonoBehaviour
+    public class ScoreBoardController : MonoBehaviour
     {
         [SerializeField] private ScoreBoardView _view;
+        [SerializeField] private GamePlayView _gamePlayView;
+        
+        public GamePlayController gamePlayController;
 
         private PokerHand _currentPokerHand;
+        private int _score = 0;
 
         private void Start()
         {
             // Temporarily initialize PokerHandManager here
-            PokerHandManager.GetInstance().StartNewGame();
+            PokerHandController.GetInstance().StartNewGame();
 
             UpdatePokerHandsInformation();
         }
 
-        private int _score
-        {
-            set => _view.UpdateScore(value);
-        }
-
-        private int _currentHandsScore
-        {
-            get => GetCurrentHandsScore();
-            set => _view.UpdateScore(value);
-        }
-
         public void UpdateScore()
         {
-            _score = GetCurrentHandsScore();
+            _score = _score + GetCurrentHandsScore();
+            _view.UpdateScore(_score);
+    
+            // Gọi coroutine để delay
+            StartCoroutine(DelayCheckStageRequirement(_score));
+        }
+
+        private IEnumerator DelayCheckStageRequirement(int score)
+        {
+            yield return new WaitForSeconds(1f);
+            HasReachedStageScoreRequirement(score);
+        }
+
+        private void HasReachedStageScoreRequirement(int score)
+        {
+            if (score > 300)
+            {
+                gamePlayController.EnableRewardBreakdownUI();
+            }
         }
 
         public void SetCurrentPokerHand(PokerHand pokerHand)

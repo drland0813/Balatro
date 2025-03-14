@@ -24,7 +24,7 @@ namespace GamePlay
 
         [SerializeField] private TextMeshProUGUI _handsNumer;
         [SerializeField] private TextMeshProUGUI _discardsNumer;
-        [SerializeField] private TextMeshProUGUI _Money;
+        // [SerializeField] private TextMeshProUGUI _money;
         [SerializeField] private TextMeshProUGUI _AnteNumber;
         [SerializeField] private TextMeshProUGUI _RoundNumber;
 

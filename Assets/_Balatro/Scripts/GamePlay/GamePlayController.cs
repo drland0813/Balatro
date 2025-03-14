@@ -5,6 +5,8 @@ using Balatro;
 using DG.Tweening;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.Serialization;
+
 namespace GamePlay
 {
     public interface IGameLogic
@@ -15,12 +17,15 @@ namespace GamePlay
     }
     public class GamePlayController : MonoBehaviour, IGameLogic
     {
+        [SerializeField] private GamePlayView _gamePlayView;
+        
         [SerializeField] private PlayerHandCardHolder _playerHandCard;
         [SerializeField] private HorizontalCardHolder _jokerCard;
         [SerializeField] private HorizontalCardHolder _specialCard;
         [SerializeField] private TableCardHolder _tableCardHolder;
 
-        [SerializeField] private ScoreManager _scoreManager;
+        [SerializeField] private ScoreBoardController _scoreBoardController;
+        [SerializeField] private RewardBreakdownController _rewardBreakdownController;
 
         public Action OnWin;
         public Action OnLose;
@@ -37,15 +42,15 @@ namespace GamePlay
             {
                 _playerHandCard.Refresh();
             };
-            _tableCardHolder.OnPlayEffectFinish += _scoreManager.UpdateScore;
+            _tableCardHolder.OnPlayEffectFinish += _scoreBoardController.UpdateScore;
             _tableCardHolder.OnPlayEffectFinish += () =>
             {
-                _scoreManager.SetCurrentPokerHand(null);
+                _scoreBoardController.SetCurrentPokerHand(null);
                 _playerHandCard.AddNewCards();
                 _playerHandCard.MoveY(moveDown: false);
             };
 
-            _tableCardHolder.OnExecuteCard += _scoreManager.ShowChipScore;
+            _tableCardHolder.OnExecuteCard += _scoreBoardController.ShowChipScore;
             _playerHandCard.OnCardClicked += CheckPokerHandsInfo;
 
             _playerHandCard.Init();
@@ -192,14 +197,39 @@ namespace GamePlay
         private void UpdatePokerHandsInfo(List<Card> chosenCards)
         {
             var type = PokerHandChecker.CheckHand(chosenCards);
-            var handData = PokerHandManager.Instance.GetHandById((int)type);
-            _scoreManager.SetCurrentPokerHand(handData);
+            var handData = PokerHandController.Instance.GetHandById((int)type);
+            _scoreBoardController.SetCurrentPokerHand(handData);
         }
 
         private void UpdatePokerHandsInfo(PokerHandType type)
         {
-            var handData = PokerHandManager.Instance.GetHandById((int)type);
-            _scoreManager.SetCurrentPokerHand(handData);
+            var handData = PokerHandController.Instance.GetHandById((int)type);
+            _scoreBoardController.SetCurrentPokerHand(handData);
+        }
+
+        public void EnableRewardBreakdownUI()
+        {
+            //Fake data
+            List<Reward> rewards = new List<Reward>()
+            {
+                new Reward(
+                    RewardType.RemainingHands,
+                    null,                       
+                    "4",                        
+                    "Remaining Hands ($1 each)", 
+                    4
+                )
+            };
+            
+            _rewardBreakdownController.SetStageReward(new StageReward(null, "300", 3));
+            _rewardBreakdownController.SetRewards(rewards);
+            
+            _gamePlayView.EnableRewardBreakdownUI();
+        }
+
+        public void DisableRewardBreakdownUI()
+        {
+            _gamePlayView.DisableRewardBreakdownUI();
         }
     }
 }
