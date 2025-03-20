@@ -271,5 +271,10 @@ namespace Balatro
         {
             _moveTween.Kill();
         }
+
+        public void StopIdleEffect()
+        {
+            _transfromEffect.StopIdleEffect();
+        }
     }
 }

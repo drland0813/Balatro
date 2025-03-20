@@ -27,6 +27,29 @@ namespace GamePlay
         [SerializeField] private ScoreBoardController _scoreBoardController;
         [SerializeField] private RewardBreakdownController _rewardBreakdownController;
 
+        private int _playHandTurnRemain = 4;
+        public int PlayHandTurnRemain
+        {
+            get => _playHandTurnRemain;
+            set
+            {
+                _playHandTurnRemain = value;
+                _gamePlayView.UpdatePlayHandsTurn(value);
+            }
+        }
+
+        public int DiscardTurnRemain
+        {
+            get => _discardTurnRemain;
+            set
+            {
+                _discardTurnRemain = value;
+                _gamePlayView.UpdatePDiscardTurn(value);
+            }
+        }
+
+        private int _discardTurnRemain = 4;
+
         public Action OnWin;
         public Action OnLose;
         
@@ -160,30 +183,47 @@ namespace GamePlay
 
         public void PlayHand()
         {
-            var playerHandCards = _playerHandCard.GetCardsAreChosen();
-            if (playerHandCards.Count > 5) return;
-
-            var type = PokerHandChecker.CheckHand(playerHandCards);
-            UpdatePokerHandsInfo(type);
-            _tableCardHolder.GetCardsData(playerHandCards);
-            _tableCardHolder.SetCardsOnPokerHands(PokerHandChecker.GetHandCards(playerHandCards, type));
-
-
-            foreach (var card in playerHandCards)
+            if (PlayHandTurnRemain > 0)
             {
-                card.CanInteract = false;
-                card.IsChosen = false;
+                PlayHandTurnRemain--;
+                var playerHandCards = _playerHandCard.GetCardsAreChosen();
+                if (playerHandCards.Count > 5) return;
+
+                _playerHandCard.ClearChosenCards();
+                var type = PokerHandChecker.CheckHand(playerHandCards);
+                UpdatePokerHandsInfo(type);
+                _tableCardHolder.GetCardsData(playerHandCards);
+                _tableCardHolder.SetCardsOnPokerHands(PokerHandChecker.GetHandCards(playerHandCards, type));
+
+
+                foreach (var card in playerHandCards)
+                {
+                    card.CanInteract = false;
+                    card.IsChosen = false;
+                }
+
+                _playerHandCard.MoveY(callback: () =>
+                {
+                    _tableCardHolder.GenerateCards();
+                });
+            }
+            else
+            {
+                EndGame();
             }
 
-            _playerHandCard.MoveY(callback: () =>
-            {
-                _tableCardHolder.GenerateCards();
-            });
+        }
+
+        private void EndGame()
+        {
         }
 
         public void Discard()
         {
-            // _playerHandCard.DisCard();
+            if (DiscardTurnRemain == 0) return;
+
+            DiscardTurnRemain--;
+            _playerHandCard.DisCard();
         }
 
         private void CheckPokerHandsInfo()

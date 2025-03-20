@@ -22,12 +22,17 @@ public class TransformEffects : MonoBehaviour
     
     void OnDestroy()
     {
-        _idleTween?.Kill();
+        StopIdleEffect();
     }
 
     public void Init()
     {
         StartIdleEffect();
+    }
+
+    public void StopIdleEffect()
+    {
+        _idleTween?.Kill();
     }
 
     private void StartIdleEffect()
@@ -79,7 +84,7 @@ public class TransformEffects : MonoBehaviour
     public void SetupOriginTransform(Vector3 pos, Vector3 rot, bool playIdleEffect = true)
     {
         if (_rectTransform == null) return;
-
+        StopIdleEffect();
         _rectTransform?.DOAnchorPos(pos, 0.1f).SetEase(Ease.InSine);
         _rectTransform?.DOLocalRotate(rot, 0.1f).SetEase(Ease.InSine);
         _originRotation = rot;

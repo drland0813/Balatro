@@ -11,7 +11,8 @@ namespace Balatro
         Pick,
         PlayEffect,
         UnPick,
-        Clear
+        Clear,
+        Add
     }
     public class TableCardHolder : HorizontalCardHolder
     {
@@ -48,7 +49,6 @@ namespace Balatro
         IEnumerator PlayHandEffectCoroutine()
         {
             var cardCount = _cards.Count;
-            var cardValid = _cards;
             var disappearDuration = 0.3f;
             for (var i = 0; i < _totalCardEffectPhase * cardCount; i++)
             {
@@ -61,8 +61,8 @@ namespace Balatro
                             var card = _cards[index];
                             var slot = _slots[index];
                             card.SetCardSlot(slot);
-                            card.SetupOriginTransform(slot.CardPosition, slot.CardLocalRotation);
-                            if (index == cardValid.Count - 1)
+                            card.SetupOriginTransform(slot.CardPosition, slot.CardLocalRotation, false);
+                            if (index == _cards.Count - 1)
                                 OnPlayEffectStart?.Invoke();
 
                             yield return null;
@@ -75,7 +75,6 @@ namespace Balatro
                                 yield return new WaitForSeconds(0.5f);
 
                             var card = _cards[index];
-                            if (!cardValid.Contains(card)) continue;
                             if (_cardsOnPokerHands == null || !_cardsOnPokerHands.Contains(card)) continue;
 
                             card.UpdateChosenState(true);
@@ -88,7 +87,6 @@ namespace Balatro
                                 yield return new WaitForSeconds(0.5f);
 
                             var card = _cards[index];
-                            if (!cardValid.Contains(card)) continue;
                             if (_cardsOnPokerHands == null || !_cardsOnPokerHands.Contains(card)) continue;
 
                             OnExecuteCard(card.GetCardData().Chip, card.transform.position);
@@ -102,7 +100,7 @@ namespace Balatro
                                 yield return new WaitForSeconds(0.5f);
 
                             var card = _cards[index];
-                            if (!cardValid.Contains(card)) continue;
+                            if (_cardsOnPokerHands == null || !_cardsOnPokerHands.Contains(card)) continue;
 
                             card.UpdateChosenState(false);
                             yield return new WaitForSeconds(0.2f);
