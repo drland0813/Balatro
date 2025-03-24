@@ -13,7 +13,7 @@ namespace Balatro
         public List<Sprite> Hearts;
 
 
-        public Sprite GetCardSprite(int type, string id)
+        public Sprite GetCardSprite(CardType type, string id)
         {
             var sprite = (CardType)type switch
             {
