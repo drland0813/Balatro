@@ -16,28 +16,60 @@ namespace Balatro
 
     public enum CardType
     {
+        //Normal card
         Spades = 1,
-        Clubs,
-        Diamonds,
-        Hearts
+        Clubs = 2,
+        Diamonds = 3,
+        Hearts = 4
+        
+        //Update card: start 11
+        
+        //Joker card: start 111
+        
+        //Pack card: : start 1111
+    }
+
+    public enum CardCategory
+    {
+        Normal = 1,
+        Update = 2,
+        Joker = 3,
+        Pack = 4,
     }
 
     [Serializable]
     public class CardData
     {
+        //Default variable
         public string ID;
         public int Value;
         public int Chip;
-        public int Type;
+        public CardType Type;
+        public CardCategory Category;
         public string Description;
+        public int Money;
 
-        public CardData(string id, int value, int chip, int type, string description)
+        //For All
+        public CardData(string id = "", int value = 0, int chip = 0, CardType type = CardType.Spades,
+            CardCategory category = CardCategory.Normal,
+            string description = "", int money = 0)
         {
             ID = id;
             Value = value;
             Chip = chip;
             Type = type;
+            Category = category;
             Description = description;
+            Money = money;
+        }
+
+        //For Update, Joker, Pack
+        public CardData(CardType type, CardCategory category, string description = "", int money = 0)
+        {
+            Type = type;
+            Category = category;
+            Description = description;
+            Money = money;
         }
 
         public CardData()
@@ -73,11 +105,12 @@ namespace Balatro
             _transfromEffect = GetComponent<TransformEffects>();
             _cardSlot = transform.parent.GetComponent<CardSlot>();
         }
+        
+        
 
         public void Init(CardData data)
         {
             _data = data;
-
         }
 
         public void SetupView(Sprite sprite)

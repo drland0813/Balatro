@@ -64,7 +64,7 @@ namespace Balatro
         public void RenderStageRewards(StageReward stageReward)
         {
             _stageRewardMoney.text = new string('$', stageReward.Value);
-            _goalScore.text = _goalScore.text + stageReward.Score;
+            _goalScore.text = "<sprite index=0> " + stageReward.Score;
             // _goalChip
         }
         
